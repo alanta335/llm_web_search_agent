@@ -8,6 +8,7 @@ class SmartAgentApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// ContextLoads
 	}
 
 }
