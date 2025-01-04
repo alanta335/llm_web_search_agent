@@ -1,14 +1,7 @@
 package com.smartagent.smartAgent.config;
 
 import com.smartagent.smartAgent.assistant.FilterAssistant;
-import com.smartagent.smartAgent.assistant.MasterAssistant;
-import com.smartagent.smartAgent.retriever.PreprocessingContentRetriever;
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
-import dev.langchain4j.rag.RetrievalAugmentor;
-import dev.langchain4j.rag.query.router.DefaultQueryRouter;
-import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.AiServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +13,15 @@ public class SlaveAssistantConfiguration {
     @Autowired
     ChatLanguageModel chatLanguageModel;
 
+    /**
+     * Configures and provides a bean for FilterAssistant.
+     * <p>
+     * This method creates a FilterAssistant instance using the provided chat language model.
+     * The FilterAssistant can be used for specialized filtering tasks in the AI system.
+     * </p>
+     *
+     * @return an instance of {@link FilterAssistant} configured with the required chat language model.
+     */
     @Bean
     FilterAssistant createFilterAssistant() {
         return AiServices.builder(FilterAssistant.class)

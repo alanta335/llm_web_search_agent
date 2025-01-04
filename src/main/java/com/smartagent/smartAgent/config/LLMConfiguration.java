@@ -22,6 +22,16 @@ public class LLMConfiguration {
     @Value("${model-name}")
     private String llmName;
 
+    /**
+     * Configures and provides a bean for ChatLanguageModel.
+     * <p>
+     * This method creates an instance of OpenAiChatModel and it compatible LLM model using properties defined in the application configuration.
+     * The model is configured to log both requests and responses, enforce strict JSON schema validation, and use the
+     * specified base URL, API key, and model name.
+     * </p>
+     *
+     * @return an instance of {@link ChatLanguageModel} configured for LLM integration.
+     */
     @Bean
     ChatLanguageModel chatLanguageModel() {
         return OpenAiChatModel.builder()
@@ -34,6 +44,15 @@ public class LLMConfiguration {
                 .build();
     }
 
+    /**
+     * Configures and provides a bean for OpenAiTokenizer.
+     * <p>
+     * This method creates an OpenAiTokenizer using the GPT-4-O model name for tokenization purposes.
+     * The tokenizer is essential for managing input and output token counts when interacting with the OpenAI API.
+     * </p>
+     *
+     * @return an instance of {@link OpenAiTokenizer} configured for the GPT-4-O model which is also compatible with the other LLM model.
+     */
     @Bean
     OpenAiTokenizer tokenizer() {
         return new OpenAiTokenizer(OpenAiChatModelName.GPT_4_O);
