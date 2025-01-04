@@ -1,7 +1,7 @@
 package com.smartagent.smartAgent.assistant;
 
 
-import com.smartagent.smartAgent.record.FilterAssistantResponse;
+import com.smartagent.smartAgent.record.llmresponse.FilterAssistantResponse;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;

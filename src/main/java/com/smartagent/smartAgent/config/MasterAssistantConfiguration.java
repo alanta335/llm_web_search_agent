@@ -21,6 +21,16 @@ public class MasterAssistantConfiguration {
     @Autowired
     PreprocessingContentRetriever preprocessingContentRetriever;
 
+    /**
+     * Configures and provides a bean for MasterAssistant.
+     * <p>
+     * This method creates a MasterAssistant instance, integrating various components such as the chat language model,
+     * a query router for preprocessing content, and a retrieval augmenter. Additionally, it sets up a message window
+     * chat memory to manage chat history with a limit of 20 messages.
+     * </p>
+     *
+     * @return an instance of {@link MasterAssistant} configured with the required services and augmenters.
+     */
     @Bean
     MasterAssistant createMasterAssistant() {
 
