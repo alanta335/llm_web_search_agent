@@ -36,7 +36,7 @@ public class WebSearchConfiguration {
 
         return WebSearchContentRetriever.builder()
                 .webSearchEngine(webSearchEngine)
-                .maxResults(10)
+                .maxResults(3)
                 .build();
     }
 }

@@ -1,12 +1,15 @@
 package com.smartagent.smartAgent.retriever;
 
+import com.smartagent.smartAgent.service.impl.DataIngestionServiceImpl;
 import com.smartagent.smartAgent.utility.CommonUtility;
+import dev.langchain4j.data.document.Document;
 import dev.langchain4j.rag.content.Content;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.WebSearchContentRetriever;
 import dev.langchain4j.rag.query.Query;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,24 +30,14 @@ import static com.smartagent.smartAgent.utility.CommonUtility.MAX_TOKEN_SIZE;
 @Component
 public class PreprocessingContentRetriever implements ContentRetriever {
 
-    private final ContentRetriever delegate;
+    @Autowired
+    private CommonUtility commonUtility;
 
     @Autowired
-    CommonUtility commonUtility;
+    private WebSearchContentRetriever webSearchContentRetriever;
 
-    /**
-     * Constructs a {@code PreprocessingContentRetriever} with a delegated {@link ContentRetriever}.
-     * <p>
-     * The provided {@link WebSearchContentRetriever} serves as the primary content retriever, and this
-     * class enhances its functionality by preprocessing the retrieved data.
-     * </p>
-     *
-     * @param webSearchContentRetriever the delegated {@link ContentRetriever} for retrieving web search results.
-     */
     @Autowired
-    public PreprocessingContentRetriever(WebSearchContentRetriever webSearchContentRetriever) {
-        this.delegate = webSearchContentRetriever;
-    }
+    private DataIngestionServiceImpl dataIngestionService;
 
     /**
      * Retrieves and preprocesses content based on the provided query.
@@ -63,21 +56,38 @@ public class PreprocessingContentRetriever implements ContentRetriever {
      */
     @Override
     public List<Content> retrieve(Query query) {
-        List<Content> contents = delegate.retrieve(query);
-        List<Content> filteredContents = contents.stream()
-                .map(content -> commonUtility.extractWebPageContentFromUrl(content))
-                .map(extractedContent -> commonUtility.filterRelevantData(query, List.of(extractedContent)))
-                .filter(Objects::nonNull)
-                .filter(content -> StringUtils.isNotBlank(content.textSegment().text()))
-                .collect(Collectors.toList());
+        List<Content> webContents = getWebContents(query);
 
-        int totalTokenCount = commonUtility.calculateTokenCount(filteredContents);
+        int totalTokenCount = commonUtility.calculateTokenCount(webContents);
 
         // If token count exceeds the limit, reduce the data
         if (totalTokenCount > MAX_TOKEN_SIZE) {
-            filteredContents = commonUtility.reduceTokenCount(query, filteredContents);
+            webContents = commonUtility.reduceTokenCount(query, webContents);
         }
 
-        return filteredContents;
+        return webContents;
+    }
+
+    @NotNull
+    private List<Content> getWebContents(@NotNull Query query) {
+        List<Content> contents = webSearchContentRetriever.retrieve(query);
+
+        return contents.stream()
+                .map(content -> commonUtility.extractWebPageContentFromUrl(content))
+                .map(extractedContent -> {
+                    Content filteredContent = commonUtility.filterRelevantData(query, List.of(extractedContent));
+                    if (Objects.nonNull(filteredContent)) {
+                        ingestDataToEmbeddingStore(filteredContent);
+                    }
+                    return filteredContent;
+                })
+                .filter(Objects::nonNull)
+                .filter(content -> StringUtils.isNotBlank(content.textSegment().text()))
+                .collect(Collectors.toList());
+    }
+
+    private void ingestDataToEmbeddingStore(Content content) {
+        Document document = new Document(content.textSegment().text(), content.textSegment().metadata());
+        dataIngestionService.ingestData(List.of(document));
     }
 }

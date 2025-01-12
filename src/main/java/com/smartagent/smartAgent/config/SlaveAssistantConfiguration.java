@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class SlaveAssistantConfiguration {
 
     @Autowired
-    ChatLanguageModel chatLanguageModel;
+    private ChatLanguageModel chatLanguageModel;
 
     /**
      * Configures and provides a bean for FilterAssistant.
