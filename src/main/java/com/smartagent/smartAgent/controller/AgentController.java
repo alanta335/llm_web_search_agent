@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AgentController {
     @Autowired
-    WebSearchAgent webSearchAgent;
+    private WebSearchAgent webSearchAgent;
 
     /**
      * Handles HTTP GET requests to the /web-search-agent endpoint.

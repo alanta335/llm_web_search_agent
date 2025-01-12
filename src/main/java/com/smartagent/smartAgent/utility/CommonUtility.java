@@ -29,12 +29,12 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 public class CommonUtility {
-    @Autowired
-    FilterAssistant filterAssistant;
-    @Autowired
-    OpenAiTokenizer tokenizer;
 
     public static final int MAX_TOKEN_SIZE = 8_000;
+    @Autowired
+    private FilterAssistant filterAssistant;
+    @Autowired
+    private OpenAiTokenizer tokenizer;
 
     /**
      * Filters relevant data from the given contents based on the provided query.
