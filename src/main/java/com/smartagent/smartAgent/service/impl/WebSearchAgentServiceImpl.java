@@ -1,7 +1,7 @@
 package com.smartagent.smartAgent.service.impl;
 
 import com.smartagent.smartAgent.assistant.WebSearchAssistant;
-import com.smartagent.smartAgent.service.WebSearchAgent;
+import com.smartagent.smartAgent.service.WebSearchAgentService;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of the WebSearchAgent interface that provides a method to fetch answers
+ * Implementation of the WebSearchAgentService interface that provides a method to fetch answers
  * from a primary assistant based on a given question.
  * <p>
  * This service uses the WebSearchAssistant to retrieve the answer for the provided query.
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class WebSearchAgentImpl implements WebSearchAgent {
+public class WebSearchAgentServiceImpl implements WebSearchAgentService {
 
     @Autowired
     private WebSearchAssistant webSearchAssistant;

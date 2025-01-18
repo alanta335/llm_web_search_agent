@@ -36,6 +36,7 @@ public class WebSearchConfiguration {
 
         return WebSearchContentRetriever.builder()
                 .webSearchEngine(webSearchEngine)
+                //TODO: need to decided if it need to be configurable or hardcoded and value need to be changed
                 .maxResults(3)
                 .build();
     }
