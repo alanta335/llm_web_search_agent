@@ -76,9 +76,9 @@ public class PreprocessingContentRetriever implements ContentRetriever {
                 .map(content -> commonUtility.extractWebPageContentFromUrl(content))
                 .map(extractedContent -> {
                     Content filteredContent = commonUtility.filterRelevantData(query, List.of(extractedContent));
-                    if (Objects.nonNull(filteredContent)) {
-                        ingestDataToEmbeddingStore(filteredContent);
-                    }
+//                    if (Objects.nonNull(filteredContent)) {
+//                        ingestDataToEmbeddingStore(filteredContent);
+//                    }
                     return filteredContent;
                 })
                 .filter(Objects::nonNull)

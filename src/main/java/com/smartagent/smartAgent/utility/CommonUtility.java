@@ -1,7 +1,7 @@
 package com.smartagent.smartAgent.utility;
 
-import com.smartagent.smartAgent.assistant.FilterAssistant;
-import com.smartagent.smartAgent.record.llmresponse.FilterAssistantResponse;
+import com.smartagent.smartAgent.assistant.DataFilterAssistant;
+import com.smartagent.smartAgent.record.llmresponse.DataFilterAssistantResponse;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
@@ -32,7 +32,7 @@ public class CommonUtility {
 
     public static final int MAX_TOKEN_SIZE = 8_000;
     @Autowired
-    private FilterAssistant filterAssistant;
+    private DataFilterAssistant dataFilterAssistant;
     @Autowired
     private OpenAiTokenizer tokenizer;
 
@@ -59,9 +59,9 @@ public class CommonUtility {
 
         if (CollectionUtils.isNotEmpty(data)) {
             try {
-                FilterAssistantResponse filterAssistantResponse = filterAssistant.answer(question, data);
-                if (StringUtils.isNotBlank(filterAssistantResponse.extractedData())) {
-                    return Content.from(new TextSegment(filterAssistantResponse.extractedData(), metadata));
+                DataFilterAssistantResponse dataFilterAssistantResponse = dataFilterAssistant.answer(question, data);
+                if (StringUtils.isNotBlank(dataFilterAssistantResponse.extractedData())) {
+                    return Content.from(new TextSegment(dataFilterAssistantResponse.extractedData(), metadata));
                 } else {
                     return null;
                 }
@@ -82,18 +82,19 @@ public class CommonUtility {
     public Content extractWebPageContentFromUrl(Content content) {
         String processedText = content.textSegment().text();
         String url = content.textSegment().metadata().getString("url");
+        String webData = "";
 
         try {
             Document doc = Jsoup.connect(url).get();
             String webPageText = doc.text();
             if (StringUtils.isNotBlank(webPageText)) {
-                processedText = processedText + "\n" + webPageText;
+                webData = processedText + "\n" + webPageText;
             }
         } catch (Exception e) {
             log.error("Error fetching content from URL: {}", e.getMessage());
         }
 
-        return Content.from(new TextSegment(processedText, content.textSegment().metadata()));
+        return Content.from(new TextSegment(webData, content.textSegment().metadata()));
     }
 
     /**

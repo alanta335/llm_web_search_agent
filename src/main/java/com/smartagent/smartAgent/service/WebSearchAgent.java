@@ -2,7 +2,7 @@ package com.smartagent.smartAgent.service;
 
 /**
  * Interface for a WebSearchAgent that provides functionality to retrieve answers
- * to questions through a web search or an integrated system (e.g., MasterAssistant).
+ * to questions through a web search or an integrated system (e.g., WebSearchAssistant).
  * <p>
  * Implementing classes are expected to define how the answer to a given question
  * is retrieved, which may involve querying a search engine, API, or other data sources.
