@@ -1,6 +1,6 @@
 package com.smartagent.smartAgent.config;
 
-import com.smartagent.smartAgent.assistant.MasterAssistant;
+import com.smartagent.smartAgent.assistant.WebSearchAssistant;
 import com.smartagent.smartAgent.retriever.PreprocessingContentRetriever;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MasterAssistantConfiguration {
+public class WebSearchAssistantConfiguration {
     @Autowired
     private EmbeddingStore<TextSegment> embeddingStore;
 
@@ -33,17 +33,17 @@ public class MasterAssistantConfiguration {
     private PreprocessingContentRetriever preprocessingContentRetriever;
 
     /**
-     * Configures and provides a bean for MasterAssistant.
+     * Configures and provides a bean for WebSearchAssistant.
      * <p>
-     * This method creates a MasterAssistant instance, integrating various components such as the chat language model,
+     * This method creates a WebSearchAssistant instance, integrating various components such as the chat language model,
      * a query router for preprocessing content, and a retrieval augmenter. Additionally, it sets up a message window
      * chat memory to manage chat history with a limit of 20 messages.
      * </p>
      *
-     * @return an instance of {@link MasterAssistant} configured with the required services and augmenters.
+     * @return an instance of {@link WebSearchAssistant} configured with the required services and augmenters.
      */
     @Bean
-    MasterAssistant createMasterAssistant() {
+    WebSearchAssistant createWebSearchAssistant() {
 
         ContentRetriever embeddingStoreContentRetriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embeddingStore)
@@ -58,7 +58,8 @@ public class MasterAssistantConfiguration {
         // this is the retriever that will be used to retrieve the content for the LLM
         // Additional ContentRetriever can be added to the list to retrieve content from other sources
         //TODO: Add other ContentRetriever to retrieve content from other sources
-        QueryRouter queryRouter = new DefaultQueryRouter(preprocessingContentRetriever, embeddingStoreContentRetriever);
+//        QueryRouter queryRouter = new DefaultQueryRouter(preprocessingContentRetriever, embeddingStoreContentRetriever);
+        QueryRouter queryRouter = new DefaultQueryRouter(preprocessingContentRetriever);
 
         //TODO: Implement content aggregator to aggregate the retrieved contents into a single list
 //        ContentAggregator contentAggregator = new DefaultContentAggregator();
@@ -73,7 +74,7 @@ public class MasterAssistantConfiguration {
 //                .contentInjector()
                 .build();
 
-        return AiServices.builder(MasterAssistant.class)
+        return AiServices.builder(WebSearchAssistant.class)
                 .chatLanguageModel(chatLanguageModel)
                 .retrievalAugmentor(retrievalAugmentor)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(20))

@@ -1,6 +1,6 @@
 package com.smartagent.smartAgent.service.impl;
 
-import com.smartagent.smartAgent.assistant.MasterAssistant;
+import com.smartagent.smartAgent.assistant.WebSearchAssistant;
 import com.smartagent.smartAgent.service.WebSearchAgent;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  * Implementation of the WebSearchAgent interface that provides a method to fetch answers
  * from a primary assistant based on a given question.
  * <p>
- * This service uses the MasterAssistant to retrieve the answer for the provided query.
+ * This service uses the WebSearchAssistant to retrieve the answer for the provided query.
  * If an error occurs during the retrieval process, the exception is logged, and a
  * runtime exception is thrown with the appropriate error message.
  */
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class WebSearchAgentImpl implements WebSearchAgent {
 
     @Autowired
-    private MasterAssistant masterAssistant;
+    private WebSearchAssistant webSearchAssistant;
 
     @Autowired
     private EmbeddingModel embeddingModel;
@@ -45,7 +45,7 @@ public class WebSearchAgentImpl implements WebSearchAgent {
     @Override
     public String agentReplyWithWebSearchData(String question) {
         try {
-            return masterAssistant.answer(question);
+            return webSearchAssistant.answer(question);
         } catch (Exception e) {
             log.error("Error in agentReplyWithWebSearchData: {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
