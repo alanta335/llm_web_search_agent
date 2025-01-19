@@ -1,5 +1,7 @@
 package com.smartagent.smartAgent.service;
 
+import com.smartagent.smartAgent.record.domain.WebSearchResult;
+
 /**
  * Interface for a WebSearchAgentService that provides functionality to retrieve answers
  * to questions through a web search or an integrated system (e.g., WebSearchAssistant).
@@ -14,6 +16,6 @@ public interface WebSearchAgentService {
      * @param question The question for which an answer is requested.
      * @return The answer as a String.
      */
-    String agentReplyWithWebSearchData(String question);
+    WebSearchResult agentReplyWithWebSearchData(String question);
 
 }

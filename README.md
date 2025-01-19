@@ -1,4 +1,4 @@
-# 🌟 LLM Web Search Agent
+# ✨ LLM Web Search Agent
 
 ## 🚀 Overview
 This project enables a Language Model (LLM) to search the web and scrape data from the search results to build a knowledge base. The LLM then uses this enriched knowledge base to answer user queries with greater accuracy and context.
@@ -19,7 +19,7 @@ The **LLM Web Search Agent** is built using **Java (Spring Boot)** and **SearxNG
 
 ---
 
-## 📋 Requirements
+## 📜 Requirements
 To get started, make sure you have the following:
 1. **Java 21 or later**
 2. **Maven** for dependency management
@@ -93,7 +93,7 @@ logging.level.dev.ai4j.openai4j=DEBUG
 
 ---
 
-## 📑 Logging
+## 🔖 Logging
 The application offers detailed logging capabilities:
 - **Requests & Responses:** Logged by LangChain4j for transparency.
 - **Debugging:** Enabled for in-depth troubleshooting.
@@ -125,3 +125,9 @@ We’d like to thank the creators of these amazing technologies:
 
 ## 🌟 Join Us!
 Help us grow the LLM Web Search Agent into the ultimate search and AI tool. Let’s build something incredible together!
+
+---
+
+## 🔦 Swagger API Documentation
+1. After starting the Spring Boot application, visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) to access the Swagger API documentation.
+2. Alternatively, the pre-generated Swagger documentation is located in the `swagger` folder. Open `index.html`(https://github.com/alanta335/llm_web_search_agent_java/blob/main/swagger/index.html) to view it locally.
