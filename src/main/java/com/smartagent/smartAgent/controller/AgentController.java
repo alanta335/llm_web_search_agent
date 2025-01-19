@@ -1,5 +1,6 @@
 package com.smartagent.smartAgent.controller;
 
+import com.smartagent.smartAgent.mapper.WebSearchMapper;
 import com.smartagent.smartAgent.record.dto.response.WebSearchResponseDto;
 import com.smartagent.smartAgent.service.WebSearchAgentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AgentController {
     @Autowired
     private WebSearchAgentService webSearchAgentService;
+    @Autowired
+    private WebSearchMapper webSearchMapper;
 
     /**
      * Handles HTTP GET requests to the /web-search-agent endpoint.
@@ -34,7 +37,7 @@ public class AgentController {
     @GetMapping("/web-search-agent")
     ResponseEntity<WebSearchResponseDto> webSearchAgent(@RequestParam String question) {
         try {
-            WebSearchResponseDto response = new WebSearchResponseDto(webSearchAgentService.agentReplyWithWebSearchData(question));
+            WebSearchResponseDto response = webSearchMapper.mapWebSearchResultToWebSearchResponseDto(webSearchAgentService.agentReplyWithWebSearchData(question));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new WebSearchResponseDto("Error during web searching. Please try again."));

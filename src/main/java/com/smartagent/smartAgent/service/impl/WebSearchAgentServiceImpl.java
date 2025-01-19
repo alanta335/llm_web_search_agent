@@ -1,6 +1,7 @@
 package com.smartagent.smartAgent.service.impl;
 
 import com.smartagent.smartAgent.assistant.WebSearchAssistant;
+import com.smartagent.smartAgent.record.domain.WebSearchResult;
 import com.smartagent.smartAgent.service.WebSearchAgentService;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -43,9 +44,9 @@ public class WebSearchAgentServiceImpl implements WebSearchAgentService {
      *                          an exception will be logged and re-thrown.
      */
     @Override
-    public String agentReplyWithWebSearchData(String question) {
+    public WebSearchResult agentReplyWithWebSearchData(String question) {
         try {
-            return webSearchAssistant.answer(question);
+            return new WebSearchResult(webSearchAssistant.answer(question));
         } catch (Exception e) {
             log.error("Error in agentReplyWithWebSearchData: {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
