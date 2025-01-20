@@ -2,6 +2,7 @@ package com.smartagent.smartAgent.config;
 
 import com.smartagent.smartAgent.assistant.WebSearchAssistant;
 import com.smartagent.smartAgent.retriever.PreprocessingContentRetriever;
+import com.smartagent.smartAgent.tooluse.WebSearchTool;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
@@ -15,6 +16,7 @@ import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,10 +29,18 @@ public class WebSearchAssistantConfiguration {
     private EmbeddingModel embeddingModel;
 
     @Autowired
+    @Qualifier("chatLanguageModel")
     private ChatLanguageModel chatLanguageModel;
 
     @Autowired
+    @Qualifier("ToolLanguageModel")
+    private ChatLanguageModel toolLanguageModel;
+
+    @Autowired
     private PreprocessingContentRetriever preprocessingContentRetriever;
+
+    @Autowired
+    private WebSearchTool webSearchTool;
 
     /**
      * Configures and provides a bean for WebSearchAssistant.
@@ -75,8 +85,9 @@ public class WebSearchAssistantConfiguration {
                 .build();
 
         return AiServices.builder(WebSearchAssistant.class)
-                .chatLanguageModel(chatLanguageModel)
-                .retrievalAugmentor(retrievalAugmentor)
+                .chatLanguageModel(toolLanguageModel)
+//                .retrievalAugmentor(retrievalAugmentor)
+                .tools(webSearchTool)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(20))
                 .build();
     }
