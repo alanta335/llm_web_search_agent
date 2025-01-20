@@ -22,6 +22,9 @@ public class LLMConfiguration {
     @Value("${model-name}")
     private String llmName;
 
+    @Value("${tool-model-name}")
+    private String toolLLMName;
+
     /**
      * Configures and provides a bean for ChatLanguageModel.
      * <p>
@@ -38,6 +41,19 @@ public class LLMConfiguration {
                 .baseUrl(llmUrl)
                 .apiKey(llmApiKey)
                 .modelName(llmName)
+                .logRequests(true)
+                .logResponses(true)
+                .strictJsonSchema(true)
+                .build();
+    }
+
+    @Bean
+    ChatLanguageModel ToolLanguageModel() {
+        return OpenAiChatModel.builder()
+                .baseUrl(llmUrl)
+                .apiKey(llmApiKey)
+                .modelName(toolLLMName)
+                .strictTools(true)
                 .logRequests(true)
                 .logResponses(true)
                 .strictJsonSchema(true)
