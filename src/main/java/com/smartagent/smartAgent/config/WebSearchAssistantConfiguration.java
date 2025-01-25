@@ -9,8 +9,6 @@ import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.RetrievalAugmentor;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.rag.query.router.DefaultQueryRouter;
 import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.AiServices;
@@ -54,13 +52,6 @@ public class WebSearchAssistantConfiguration {
      */
     @Bean
     WebSearchAssistant createWebSearchAssistant() {
-
-        ContentRetriever embeddingStoreContentRetriever = EmbeddingStoreContentRetriever.builder()
-                .embeddingStore(embeddingStore)
-                .embeddingModel(embeddingModel)
-                .maxResults(3)
-                .minScore(0.85)
-                .build();
 
         //TODO: Implement query transformer to refine the user query (question) before it is sent to the LLM
 //        QueryTransformer queryTransformer = new DefaultQueryTransformer();

@@ -2,14 +2,12 @@ package com.smartagent.smartAgent.utility;
 
 import com.smartagent.smartAgent.assistant.DataFilterAssistant;
 import com.smartagent.smartAgent.record.llmresponse.DataFilterAssistantResponse;
-import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.rag.content.Content;
 import dev.langchain4j.rag.query.Query;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Utility class providing common methods for filtering, processing, and managing
@@ -31,6 +26,7 @@ import java.util.stream.Stream;
 public class CommonUtility {
 
     public static final int MAX_TOKEN_SIZE = 8_000;
+    public static final int MAX_TOKEN_SIZE_FOR_EMBEDDING = 1_000;
     @Autowired
     private DataFilterAssistant dataFilterAssistant;
     @Autowired
@@ -39,29 +35,19 @@ public class CommonUtility {
     /**
      * Filters relevant data from the given contents based on the provided query.
      *
-     * @param query    The query to be used for filtering.
-     * @param contents The list of content to filter.
+     * @param query   The query to be used for filtering.
+     * @param content The list of content to filter.
      * @return A {@link Content} object containing the relevant extracted data, or null if no relevant data is found.
      */
-    public Content filterRelevantData(Query query, List<Content> contents) {
-        Metadata metadata = new Metadata();
-
-        String urls = contents.stream()
-                .map(content -> content.textSegment().metadata().getString("url"))
-                .filter(StringUtils::isNotBlank) // Ensure no null or blank URLs
-                .collect(Collectors.joining(","));
-
-        metadata.put("url", urls);
+    public Content filterRelevantData(Query query, Content content) {
         String question = query.text();
-        List<String> data = contents.stream()
-                .filter(content -> StringUtils.isNotBlank(content.textSegment().text()))
-                .map(content -> content.textSegment().text()).toList();
+        String data = content.textSegment().text();
 
-        if (CollectionUtils.isNotEmpty(data)) {
+        if (StringUtils.isNotBlank(data)) {
             try {
                 DataFilterAssistantResponse dataFilterAssistantResponse = dataFilterAssistant.answer(question, data);
                 if (StringUtils.isNotBlank(dataFilterAssistantResponse.extractedData())) {
-                    return Content.from(new TextSegment(dataFilterAssistantResponse.extractedData(), metadata));
+                    return Content.from(new TextSegment(dataFilterAssistantResponse.extractedData(), content.textSegment().metadata()));
                 } else {
                     return null;
                 }
@@ -110,39 +96,8 @@ public class CommonUtility {
                 .sum();
     }
 
-    /**
-     * Reduces the token count of the given content by splitting large contents into smaller parts
-     * and creating optimal batches where no batch exceeds the token limit.
-     *
-     * @param query    The query to be used for filtering the content after splitting.
-     * @param contents The list of content objects to be processed.
-     * @return A list of filtered content objects, where each one is within the token limit.
-     */
-    public List<Content> reduceTokenCount(Query query, List<Content> contents) {
-        // Step 1: Split large contents into smaller parts if needed
-        List<Content> processedContents = contents.stream()
-                .flatMap(content -> {
-                    int tokenCount = calculateTokenCount(List.of(content));
-                    if (tokenCount > MAX_TOKEN_SIZE) {
-                        // Split the content into smaller parts (each less than MAX_TOKEN_SIZE)
-                        return splitContentIntoSmallerParts(content).stream();
-                    } else {
-                        // If the content is already within the limit, return it as is
-                        return Stream.of(content);
-                    }
-                })
-                .collect(Collectors.toList());
-
-        // Step 2: Create optimal batches where no batch exceeds the token limit
-        List<List<Content>> batches = createOptimalBatchesUnderTokenLimit(processedContents);
-
-        // Step 3: Filter relevant data for each batch
-
-        return batches.stream()
-                .map(batch -> filterRelevantData(query, batch))
-                .filter(Objects::nonNull)
-                .filter(content -> StringUtils.isNotBlank(content.textSegment().text()))
-                .collect(Collectors.toList());
+    public int calculateTokenCount(Content content) {
+        return tokenizer.estimateTokenCountInText(content.textSegment().text());
     }
 
     /**
